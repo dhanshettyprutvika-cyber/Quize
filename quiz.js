@@ -4,7 +4,7 @@ const questions = [
   { q: "Which CSS property changes the text color?", opts: ["font-color","text-color","color","foreground"], ans: 2 },
   { q: "Which language runs directly in the browser?", opts: ["Python","Java","JavaScript","C++"], ans: 2 },
   { q: "What does DOM stand for?", opts: ["Document Object Model","Data Object Management","Display Output Mode","Document Order Map"], ans: 0 },
-  { q: "Which HTML tag is used for a hyperlink?", opts: ["<link>","<href>","<url>","<a>"], ans: 3 },
+  { q: "Which HTML tag is used for a hyperlink?",opts: ["link tag", "href tag", "url tag", "a tag"], ans: 3},
   { q: "Which CSS property controls spacing INSIDE an element?", opts: ["margin","spacing","padding","border"], ans: 2 },
   { q: "What does API stand for?", opts: ["Applied Program Interface","Application Programming Interface","Automated Process Integration","Advanced Protocol Input"], ans: 1 },
   { q: "Which JS method selects an element by its ID?", opts: ["querySelector()","getElement()","getElementById()","findById()"], ans: 2 },
@@ -84,13 +84,22 @@ function loadQuestion() {
   $('progressBar').style.width = (current / questions.length * 100) + '%';
   $('question').textContent    = q.q;
   $('options').innerHTML = '';
-  q.opts.forEach((opt, i) => {
+q.opts.forEach((opt, i) => {
     const btn = document.createElement('button');
     btn.className = 'opt-btn';
-    btn.innerHTML = `<span class="opt-letter">${['A','B','C','D'][i]}</span><span>${opt}</span>`;
+
+    const letter = document.createElement('span');
+    letter.className = 'opt-letter';
+    letter.textContent = ['A', 'B', 'C', 'D'][i];
+
+    const text = document.createElement('span');
+    text.textContent = opt;
+
+    btn.appendChild(letter);
+    btn.appendChild(text);
     btn.addEventListener('click', () => pickAnswer(btn, i));
     $('options').appendChild(btn);
-  });
+});
   const nb = $('nextBtn');
   nb.classList.add('hidden'); nb.disabled = true;
   nb.textContent = current === questions.length - 1 ? '🎉 See Results' : 'Next Question →';
