@@ -75,4 +75,49 @@
         <svg width="130" height="130" viewBox="0 0 130 130">
           <circle cx="65" cy="65" r="50" fill="none" stroke="#ede9fe" stroke-width="12"/>
           <circle id="scoreRing" cx="65" cy="65" r="50" fill="none"
-            stroke="url(#rg)" stroke-width="12"
+            stroke="url(#rg)" stroke-width="12" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#667eea"/>
+              <stop offset="100%" stop-color="#764ba2"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="ring-inner">
+          <div class="ring-score" id="ringScore">0/10</div>
+          <div class="ring-label-sm">Score</div>
+        </div>
+      </div>
+      <h2 class="result-title">Quiz Complete! 🎉</h2>
+      <p id="finalMsg"></p>
+    </div>
+
+    <div class="stat-row">
+      <div class="sbox green"><div class="snum" id="correctCount">0</div><div class="slbl">✅ Correct</div></div>
+      <div class="sbox red"><div class="snum" id="wrongCount">0</div><div class="slbl">❌ Wrong</div></div>
+    </div>
+
+    <div class="result-stats-grid">
+      <div class="rs-card">
+        <div class="rs-icon">👥</div>
+        <div class="rs-num" id="totalPlayed">0</div>
+        <div class="rs-lbl">Total Participants</div>
+      </div>
+      <div class="rs-card">
+        <div class="rs-icon">🏅</div>
+        <div class="rs-num" id="yourScoreResult">0%</div>
+        <div class="rs-lbl">Your Score</div>
+      </div>
+      <div class="rs-card">
+        <div class="rs-icon">📈</div>
+        <div class="rs-num" id="avgScoreResult">0%</div>
+        <div class="rs-lbl">Average Score</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="restartBtn">🔄 Play Again</button>
+  </div>
+
+  <script src="quiz.js"></script>
+</body>
+</html>
