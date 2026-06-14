@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Web Dev Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- WELCOME SCREEN -->
+  <div class="screen" id="welcomeScreen">
+    <div class="welcome-badge">🧠</div>
+    <h1 class="welcome-title">Web Dev Quiz</h1>
+    <p class="welcome-sub">Test your knowledge of HTML, CSS, JavaScript & more!</p>
+    <div class="info-row">
+      <div class="info-card"><div class="ic-num">10</div><div class="ic-lbl">Questions</div></div>
+      <div class="info-card"><div class="ic-num">2:00</div><div class="ic-lbl">Total Time</div></div>
+      <div class="info-card"><div class="ic-num">4</div><div class="ic-lbl">Options</div></div>
+    </div>
+    <button class="btn-primary" id="startBtn">🚀 Start Quiz</button>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div class="screen hidden" id="quizScreen">
+    <div class="top-bar">
+      <span class="q-badge" id="qCounter">1 / 10</span>
+      <span class="score-badge">⭐ Score: <span id="scoreVal">0</span></span>
+    </div>
+    <div class="prog-wrap"><div id="progressBar"></div></div>
+    <div class="timer-box">
+      <span class="timer-icon">⏱️</span>
+      <div class="timer-track"><div id="timerBar"></div></div>
+      <span id="timerDisplay">2:00</span>
+    </div>
+    <div class="question-card">
+      <p class="q-num" id="qNum">Question 1 of 10</p>
+      <p id="question">Loading...</p>
+    </div>
+    <div id="options"></div>
+    <button class="btn-primary hidden" id="nextBtn" disabled>Next Question →</button>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div class="screen hidden" id="resultScreen">
+    <div class="result-top">
+      <div class="ring-wrap">
+        <svg width="130" height="130" viewBox="0 0 130 130">
+          <circle cx="65" cy="65" r="50" fill="none" stroke="#ede9fe" stroke-width="12"/>
+          <circle id="scoreRing" cx="65" cy="65" r="50" fill="none"
+            stroke="url(#rg)" stroke-width="12" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#667eea"/>
+              <stop offset="100%" stop-color="#764ba2"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="ring-inner">
+          <div class="ring-score" id="ringScore">0/10</div>
+          <div class="ring-label-sm">Score</div>
+        </div>
+      </div>
+      <h2 class="result-title">Quiz Complete! 🎉</h2>
+      <p id="finalMsg"></p>
+    </div>
+    <div class="stat-row">
+      <div class="sbox green"><div class="snum" id="correctCount">0</div><div class="slbl">✅ Correct</div></div>
+      <div class="sbox red"><div class="snum" id="wrongCount">0</div><div class="slbl">❌ Wrong</div></div>
+    </div>
+    <button class="btn-primary" id="restartBtn">🔄 Play Again</button>
+  </div>
+
+  <script src="quiz.js"></script>
+</body>
+</html>
