@@ -1,3 +1,4 @@
+// QUESTIONS
 const questions = [
   { q: "What does HTML stand for?", opts: ["Hyper Text Markup Language","High Tech Modern Language","Hyper Transfer Markup Logic","Home Tool Markup Language"], ans: 0 },
   { q: "Which CSS property changes the text color?", opts: ["font-color","text-color","color","foreground"], ans: 2 },
@@ -11,33 +12,77 @@ const questions = [
   { q: "Which keyword declares a constant in modern JavaScript?", opts: ["var","let","def","const"], ans: 3 }
 ];
 
+// STATE
 const TOTAL_TIME = 120;
 let current = 0, score = 0, timeLeft = TOTAL_TIME, timer = null, answered = false;
 
 const $ = id => document.getElementById(id);
 
+// PARTICIPANT TRACKING
+function getTotalParticipants() {
+  return parseInt(localStorage.getItem('quizParticipants') || '0');
+}
+function incrementParticipants() {
+  const count = getTotalParticipants() + 1;
+  localStorage.setItem('quizParticipants', count);
+  return count;
+}
+function getScoreHistory() {
+  return JSON.parse(localStorage.getItem('quizScoreHistory') || '[]');
+}
+function saveScoreHistory(score) {
+  const history = getScoreHistory();
+  history.push({ score, total: questions.length, date: new Date().toLocaleDateString() });
+  localStorage.setItem('quizScoreHistory', JSON.stringify(history));
+}
+function getAverageScore() {
+  const history = getScoreHistory();
+  if (history.length === 0) return 0;
+  const sum = history.reduce((acc, h) => acc + h.score, 0);
+  return Math.round((sum / history.length / questions.length) * 100);
+}
+
+// WELCOME STATS
+function updateWelcomeStats() {
+  $('totalParticipants').textContent = getTotalParticipants();
+  $('avgScore').textContent = getAverageScore() + '%';
+}
+
+// TIMER
 function formatTime(s) { return Math.floor(s/60) + ':' + (s%60<10?'0':'') + s%60; }
 
 function updateTimerUI() {
   $('timerDisplay').textContent = formatTime(timeLeft);
   $('timerBar').style.width = (timeLeft / TOTAL_TIME * 100) + '%';
-  if (timeLeft <= 20) { $('timerBar').style.background = 'linear-gradient(90deg,#ef4444,#dc2626)'; $('timerDisplay').className = 'danger'; }
-  else if (timeLeft <= 40) { $('timerBar').style.background = 'linear-gradient(90deg,#f59e0b,#d97706)'; $('timerDisplay').className = 'warn'; }
-  else { $('timerBar').style.background = 'linear-gradient(90deg,#667eea,#764ba2)'; $('timerDisplay').className = ''; }
+  if (timeLeft <= 20) {
+    $('timerBar').style.background = 'linear-gradient(90deg,#ef4444,#dc2626)';
+    $('timerDisplay').className = 'danger';
+  } else if (timeLeft <= 40) {
+    $('timerBar').style.background = 'linear-gradient(90deg,#f59e0b,#d97706)';
+    $('timerDisplay').className = 'warn';
+  } else {
+    $('timerBar').style.background = 'linear-gradient(90deg,#667eea,#764ba2)';
+    $('timerDisplay').className = '';
+  }
 }
 
 function startTimer() {
   timeLeft = TOTAL_TIME; updateTimerUI(); clearInterval(timer);
-  timer = setInterval(() => { timeLeft--; updateTimerUI(); if (timeLeft <= 0) { clearInterval(timer); showResult(); } }, 1000);
+  timer = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) { clearInterval(timer); showResult(); }
+  }, 1000);
 }
 
+// LOAD QUESTION
 function loadQuestion() {
   answered = false;
   const q = questions[current];
-  $('qCounter').textContent = (current+1) + ' / ' + questions.length;
-  $('qNum').textContent = 'Question ' + (current+1) + ' of ' + questions.length;
+  $('qCounter').textContent    = (current+1) + ' / ' + questions.length;
+  $('qNum').textContent        = 'Question ' + (current+1) + ' of ' + questions.length;
   $('progressBar').style.width = (current / questions.length * 100) + '%';
-  $('question').textContent = q.q;
+  $('question').textContent    = q.q;
   $('options').innerHTML = '';
   q.opts.forEach((opt, i) => {
     const btn = document.createElement('button');
@@ -51,6 +96,7 @@ function loadQuestion() {
   nb.textContent = current === questions.length - 1 ? '🎉 See Results' : 'Next Question →';
 }
 
+// PICK ANSWER
 function pickAnswer(btn, idx) {
   if (answered) return;
   answered = true;
@@ -66,26 +112,41 @@ function pickAnswer(btn, idx) {
   $('nextBtn').classList.remove('hidden');
 }
 
+// SHOW RESULT
 function showResult() {
   clearInterval(timer);
+  const participantNum = incrementParticipants();
+  saveScoreHistory(score);
+  const avg = getAverageScore();
+  const pct = Math.round(score / questions.length * 100);
+
   $('quizScreen').classList.add('hidden');
   $('resultScreen').classList.remove('hidden');
-  const pct = Math.round(score / questions.length * 100);
-  $('ringScore').textContent = score + '/' + questions.length;
-  $('correctCount').textContent = score;
-  $('wrongCount').textContent = questions.length - score;
+
+  $('participantNum').textContent  = '#' + participantNum;
+  $('ringScore').textContent       = score + '/' + questions.length;
+  $('correctCount').textContent    = score;
+  $('wrongCount').textContent      = questions.length - score;
+  $('totalPlayed').textContent     = participantNum;
+  $('yourScoreResult').textContent = pct + '%';
+  $('avgScoreResult').textContent  = avg + '%';
+
   $('finalMsg').textContent =
-    pct===100 ? '🏆 Perfect! You are a Web Dev genius!' :
-    pct>=80   ? '🎉 Excellent! You really know your stuff!' :
-    pct>=60   ? '👍 Good job! A little more practice and you\'ll ace it!' :
-    pct>=40   ? '📚 Keep studying — you\'re getting there!' :
-                '💪 Don\'t give up! Review the topics and try again!';
-  const c = 2 * Math.PI * 50;
-  $('scoreRing').style.strokeDasharray = c;
-  $('scoreRing').style.strokeDashoffset = c;
-  setTimeout(() => { $('scoreRing').style.strokeDashoffset = c - (pct/100)*c; }, 100);
+    pct === 100 ? '🏆 Perfect! You are a Web Dev genius!' :
+    pct >= 80   ? '🎉 Excellent! You really know your stuff!' :
+    pct >= 60   ? '👍 Good job! Keep practicing!' :
+    pct >= 40   ? '📚 Keep studying — you\'re getting there!' :
+                  '💪 Don\'t give up! Review and try again!';
+
+  const circ = 2 * Math.PI * 50;
+  $('scoreRing').style.strokeDasharray  = circ;
+  $('scoreRing').style.strokeDashoffset = circ;
+  setTimeout(() => {
+    $('scoreRing').style.strokeDashoffset = circ - (pct / 100) * circ;
+  }, 100);
 }
 
+// RESET
 function resetQuiz() {
   current = 0; score = 0; answered = false;
   $('scoreVal').textContent = 0;
@@ -95,6 +156,15 @@ function resetQuiz() {
   startTimer(); loadQuestion();
 }
 
-$('startBtn').addEventListener('click', () => { $('welcomeScreen').classList.add('hidden'); $('quizScreen').classList.remove('hidden'); startTimer(); loadQuestion(); });
-$('nextBtn').addEventListener('click', () => { current++; if (current < questions.length) loadQuestion(); else showResult(); });
+// INIT
+updateWelcomeStats();
+$('startBtn').addEventListener('click', () => {
+  $('welcomeScreen').classList.add('hidden');
+  $('quizScreen').classList.remove('hidden');
+  startTimer(); loadQuestion();
+});
+$('nextBtn').addEventListener('click', () => {
+  current++;
+  if (current < questions.length) loadQuestion(); else showResult();
+});
 $('restartBtn').addEventListener('click', resetQuiz);
